@@ -1,0 +1,33 @@
+const rawHalfMapData = `
+    --------------
+    -pppppppppppp-
+    -p----p-----p-
+    -*----p-----p-
+    -p----p-----p-
+    -ppppppppppppp
+    -p----p--p----
+    -p----p--p----
+    -pppppp--pppp-
+    ------p-----e-
+    |||||-p-----e-
+    |||||-p--eeeeG
+    |||||-p--e---~
+    ------p--e-eee
+    eeeeeepeee-GGG
+    ------p--e-eee
+    |||||-p--e----
+    |||||-p--eeeeF
+    |||||-p--e----
+    ------p--e----
+    -pppppppppppp-
+    -p----p-----p-
+    -*----p-----p-
+    -ppp--pppppppP
+    ---p--p--p----
+    ---p--p--p----
+    -pppppp--pppp-
+    -p----------p-
+    -p----------p-
+    -ppppppppppppp
+    --------------
+`;
