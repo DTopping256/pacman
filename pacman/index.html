@@ -2,24 +2,204 @@
 	<head>
 		<title>Pac-man</title>
 		<style>
-			#menu {
+			@font-face {
+				font-family: 'pacman';
+				src: url('./pacfont-good-font/PacfontGood-yYye.ttf') format('truetype');
+			}
+
+			@font-face {
+				font-family: 'gamefont';
+				src: url('./emulogic-font/Emulogic-zrEw.ttf') format('truetype');
+			}
+
+			body {
+				font-family: gamefont;
+				color: white;
+			}
+
+			#title {
+				font-family: pacman;
+				font-size: 66px;
+				color: yellow;
+
 				position: absolute;
+				top: 5%;
+				left: 20%;
+				right: 20%;
+				text-align-last: center;	
+				margin: 0;
+			}
+			
+			#title.animated {
+				top: 40%;
+				animation-name: slideup;
+				animation-delay: 1s;
+				animation-duration: 3s;
+				animation-fill-mode: forwards;
+				animation-iteration-count: 1;
+				animation-timing-function: linear;
+			}
+
+			.menu {
+				position:absolute;
+				top: 20%;
+				left: 20%;
+				right: 20%;
+				bottom: 20%;
+
+				display: flex;
+				flex-direction: column;
+				gap: 1em;
+
+				color: yellow;
+			}
+
+			.list-4>li {
+				position: relative;
+			}
+			.list-10>li {
+				position: relative;
+			}
+			.list-4>li>span {
+				position:absolute;
+				left: 4em;
+			}
+			.list-10>li>span {
+				position:absolute;
+				left: 10em;
+			}
+
+			.bar {
+				background-color: black;
+				padding: 0.5em;
+			    left: 10%;
+			    right: 10%;
+				justify-content: center;
+			}
+
+			#container {
+				position: relative;
+				height: 100%;
+				aspect-ratio: 1/1;
+				margin-inline: auto;
 			}
 			#game {
 				background: black;
 				height: 100%;
-				aspect-ratio: 1/1;
+				width: 100%;
+				z-index: -1;
+			}
+
+			.menu button {
+				width: 100%;
+				height: 88px;
+
+				font-family: gamefont;
+				font-size: 20px;
+				color: yellow;
+				background: rgba(0, 0, 255, 0.3);
+				border: solid 2px white;
+				border-radius: 8px;
+			}
+
+			.menu button:hover {
+				background: rgba(0, 0, 255, 0.4);
+				font-size: 22px;
+				position: relative;
+			}
+
+			.menu button:hover::before {
+				content: "";
+				background-image: url(./pacman.gif);
+				background-size: 40px 40px;
+				background-color: yellow;
+				background-position-x: 29px;
+				background-position-y: 28px;
+				height: 17px;
+				width: 17px;
+				z-index: 2;
+				position: absolute;
+				top: 34px;
+				left: 20px;
+			}
+
+			#main-menu.animated button {
+				opacity: 0%;
+				animation-name: fadein;
+				animation-delay: 3.6s;
+				animation-duration: 0.4s;
+				animation-fill-mode: forwards;
+				animation-iteration-count: 1;
+				animation-timing-function: ease-in;
+			}
+
+			@keyframes slideup {
+				from {
+					top: 40%;
+				}
+
+				to {
+					top: 5%;
+				}
+			}
+
+			@keyframes fadein {
+				from {
+					opacity: 0%;
+				}
+
+				to {
+					opacity: 100%;
+				}
 			}
 		</style>
 		<link rel="icon" href="./icon.svg">
 	</head>
 	<body>
-		<div id="menu">
+		<div id="container">
+			<div class="bar">
+				<div id="current-score">Score<span id="current-score-value">0</span></div>
+				<div id="hi-score">Hi-score<span id="hi-score-value">0</span></div>
+			</div>
+			<h1 id="title" class="animated">Pac Man</h1>
+			<div id="main-menu" class="animated menu">
+				<button id="play-button">Play</button>
+				<button id="scores-button">High Scores</button>
+				<button id="controls-button">Controls</button>
+			</div>
+			<div id="scores" class="menu">
+				<ol id="scores-list" class="list-10">
+					<li>Hi-score<span>0</span></li>
+				</ol>
+				<button id="scores-back-button">Back</button>
+			</div>
+			<div id="controls" class="menu">
+				<h2>In-game Controls</h2>
+				<ul class="list-4">
+					<li>A<span>- Move left</span></li>
+					<li>W<span>- Move up</span></li>
+					<li>S<span>- Move down</span></li>
+					<li>D<span>- Move right</span></li>
+					<li>Esc<span>- Home screen</span></li>
+				</ul>
+				<button id="controls-back-button">Back</button>
+			</div>
+			<canvas id="game"></canvas>
+			<div class="bar">
+				<div id="lives">
+					<img id="life-3" href="./icon.svg"/>
+					<img id="life-2" href="./icon.svg"/>
+					<img id="life-1" href="./icon.svg"/>
+				</div>
+				<div id="fruits"></div>
+			</div>
 		</div>
-		<canvas id="game"></canvas>
+
 		<script src="./map-data.js"></script>
 		<script src="./parse-map.js"></script>
 		<script src="./graphics.js"></script>
+		<!-- <script src="./pathfinding.js"></script> -->
+		<script src="./game.js"></script>
 		<script src="./index.js"></script>
 	</body>
 </html>

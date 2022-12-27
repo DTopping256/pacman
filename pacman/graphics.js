@@ -50,7 +50,7 @@ const clearFlashyPoint = ({x, y}) => {
 }
 
 const drawFlashyPoint = ({x, y}) => {
-    context.fillStyle = 'white';
+    contewxt.fillStyle = 'white';
     context.beginPath();
     context.arc(x, y, FLASHY_POINT_RADIUS, 0, 2*Math.PI);
     context.fill();

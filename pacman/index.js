@@ -1,57 +1,129 @@
-(() => {
-    // Initial state
-    const state = { progress: 'INTRO', tickChanged: 0, level: 1, player: {
-        isMoving: true,
-        direction: 'right',
-        x: 13.5,
-        y: 23,
-    }};
+// Screens
+const title = document.getElementById('title');
+const menu = document.getElementById('main-menu');
+const scores = document.getElementById('scores');
+const controls = document.getElementById('controls');
 
-    const TICK_SPEED = 1/100; // Ticks per second
-    const PLAYER_SPEED = 0.16;
-    let start = undefined;
-    let done = false;
-    let tick = 0;
+const animateTitleElements = () => {
+    title.classList.add('animated');
+    menu.classList.add('animated');
+}
+
+const unAnimateTitleElements = () => {
+    title.classList.remove('animated');
+    menu.classList.remove('animated');
+}
+
+const hideTitleScreen = () => {
+    title?.setAttribute('style', 'display: none');
+    menu?.setAttribute('style', 'display: none');
+}
+
+const showTitleScreen = () => {
+    title?.removeAttribute('style');
+    menu?.removeAttribute('style');
+}
+
+const hideScoresScreen = () => {
+    scores?.setAttribute('style', 'display: none');
+}
+
+const showScoresScreen = () => {
+    scores?.removeAttribute('style');
+}
 
 
-    drawMap(tick, state);
-    requestDrawPlayer(tick, state);
+const hideControlsScreen = () => {
+    controls?.setAttribute('style', 'display: none');
+}
 
-    const gameLoop = (timestamp) => {
-        // if (start === undefined) {
-        //     start = timestamp;
-        // }
-        //const totalElapsed = (timestamp ?? 0) - (start ?? 0);
-        //const ticksElapsed = Math.round(totalElapsed / TICK_SPEED);
-        
-        drawMap(tick, state);
-        requestDrawPlayer(tick, state);
+const showControlsScreen = () => {
+    controls?.removeAttribute('style');
+}
 
-        const leftStep = player.x - PLAYER_SPEED;
-        
+// Events
 
+// - Title events
 
-        if (player.direction === 'left' && player.x)
-        
-        if (!done) {
-            requestAnimationFrame(gameLoop);
-            tick++;
-        }
+const titleClickEventsByElementId = {
+    'play-button': () => {
+        hideTitleScreen();
+        unbindTitleScreenEvents();
+        startGame();
+    },
+    'scores-button': () => {
+        hideTitleScreen();
+        unbindTitleScreenEvents();
+        bindScoresScreenEvents();
+        showScoresScreen();
+    },
+    'controls-button': () => {
+        hideTitleScreen();
+        unbindTitleScreenEvents();
+        bindControlsScreenEvents();
+        showControlsScreen();
     }
+};
 
-    setTimeout(gameLoop, 4000);
-    addEventListener('keydown', (event) => {
-        if (event.key.toLowerCase() === 'a') {
-            state.player.direction = 'left';
-        } 
-        if (event.key.toLowerCase() === 'd') {
-            state.player.direction = 'right';
-        } 
-        if (event.key.toLowerCase() === 'w') {
-            state.player.direction = 'top';
-        } 
-        if (event.key.toLowerCase() === 's') {
-            state.player.direction = 'bottom';
-        } 
-    })
-})();
+const bindTitleScreenEvents = () => {
+    Object.keys(titleClickEventsByElementId).forEach(id => {
+        document.getElementById(id)?.addEventListener('click', titleClickEventsByElementId[id]); 
+    });
+};
+
+const unbindTitleScreenEvents = () => {
+    Object.keys(titleClickEventsByElementId).forEach(id => {
+        document.getElementById(id)?.removeEventListener('click', titleClickEventsByElementId[id]); 
+    });
+}
+
+// - Scores events
+
+const scoresBackClickEventHandler = () => {
+    hideScoresScreen();
+    unbindScoresScreenEvents();
+    bindTitleScreenEvents();
+    unAnimateTitleElements();
+    showTitleScreen();
+};
+
+const bindScoresScreenEvents = () => {
+    document.getElementById('scores-back-button')?.addEventListener('click', scoresBackClickEventHandler); 
+};
+
+const unbindScoresScreenEvents = () => {
+    document.getElementById('scores-back-button')?.removeEventListener('click', scoresBackClickEventHandler); 
+}
+
+// - Controls events
+
+const controlsBackClickEventHandler = () => {
+    hideControlsScreen();
+    unbindControlsScreenEvents();
+    bindTitleScreenEvents();
+    unAnimateTitleElements();
+    showTitleScreen();
+}
+
+const bindControlsScreenEvents = () => {
+    document.getElementById('controls-back-button')?.addEventListener('click', controlsBackClickEventHandler); 
+};
+
+const unbindControlsScreenEvents = () => {
+    document.getElementById('controls-back-button')?.removeEventListener('click', controlsBackClickEventHandler); 
+}
+
+
+// Initial scene
+
+drawMap(0, { progress: 'INTRO', tickChanged: 0, level: 1, player: {
+    isMoving: true,
+    direction: 'right',
+    x: 13.5,
+    y: 23,
+}});
+
+hideScoresScreen();
+hideControlsScreen();
+bindTitleScreenEvents();
+animateTitleElements();
