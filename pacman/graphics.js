@@ -45,12 +45,27 @@ const drawPoint = ({x, y}) => {
     context.fill();    
 }
 
+const fruitLevels = ['cherry'];
+
+const drawFruit = ({x, y, level}) => {
+	console.log('fruit draw', {x, y, level});
+	const halfGridX = gridUnitX / 2;
+	const halfGridY = gridUnitY / 2;
+	const mapMidpointX = columns / 2 * gridUnitX;
+	
+    var img = new Image(); 
+    img.onload = function() {
+        context.drawImage(img, mapMidpointX - halfGridX, y - halfGridY, gridUnitX, gridUnitY);
+    }
+    img.src = bonusItemSVGs[fruitLevels[level-1]];
+}
+
 const clearFlashyPoint = ({x, y}) => {
     context.clearRect(x - FLASHY_POINT_RADIUS, y - FLASHY_POINT_RADIUS, FLASHY_POINT_RADIUS * 2, FLASHY_POINT_RADIUS * 2);
 }
 
 const drawFlashyPoint = ({x, y}) => {
-    contewxt.fillStyle = 'white';
+    context.fillStyle = 'white';
     context.beginPath();
     context.arc(x, y, FLASHY_POINT_RADIUS, 0, 2*Math.PI);
     context.fill();
@@ -136,7 +151,7 @@ const shouldClearFlashyPoint = (t) => Math.round(t / FLASHY_POINT_DISPLAY_INTERV
 
 const shouldChangeWallColor = (t) => Math.round(t / WALL_COLOR_CHANGE_INTERVAL_TICKS) % 2 === 0;
 
-const renderedEntities = { points: [], flashyPoints: {}, walls: {} };
+const renderedEntities = { points: [], fruit: undefined, flashyPoints: {}, walls: {} };
 
 // Will draw the given thing, if it has not been drawn or needs re-drawing.
 const requestDrawMapEntity = (entityType, gridX, gridY, t, state) => {
@@ -154,6 +169,13 @@ const requestDrawMapEntity = (entityType, gridX, gridY, t, state) => {
             if (renderedEntities.points.includes(id)) return;
             drawPoint({ x, y });
             renderedEntities.points.push(id);
+            return;
+        }
+        case 'fruit': {
+        	console.log('fruit draw request');
+            if (renderedEntities.fruits || renderedEntities.fruits === null) return;
+            drawFruit({ x, y, level: state.level });
+            renderedEntities.fruits = { isVisible: true };
             return;
         }
         case 'flashy-point': {
@@ -232,6 +254,10 @@ const drawMap = (t, state) => {
             if ((cur !== '-' && cur !== '|') && rht === '-') {
                 drawEntity('wall-right');
             }
+            
+            if (cur === 'F') {
+            	drawEntity('fruit');
+            }
         }
     }
 }
@@ -253,4 +279,30 @@ const requestDrawPlayer = (t, state) => {
 
     drawPlayer({x, y, t, direction, isMoving});
     previousPlayerPosition = { x, y };
+}
+
+const renderLives = (amount) => {
+	const livesContainer = document.getElementById('lives');
+	livesContainer.replaceChildren();
+    for (let i = 0; i < amount; i++) {
+        const lifeImg = document.createElement('img');
+		lifeImg.setAttribute('src', './icon.svg');
+		lifeImg.setAttribute('style', 'height: 30px; width: 30px;');
+        livesContainer.appendChild(lifeImg);
+	}
+}
+
+const bonusItemSVGs = {
+    cherry: './fruits/cherry.svg',
+}
+
+const renderEatenItems = (items) => {
+	const fruitsContainer = document.getElementById('fruits');
+	fruitsContainer.replaceChildren();
+    for (let fruitSrc of items) {
+        const fruitImg = document.createElement('img');
+		fruitImg.setAttribute('src', fruitSrc);
+		fruitImg.setAttribute('style', 'height: 30px; width: 30px;');
+        fruitsContainer.appendChild(fruitImg);
+	}
 }

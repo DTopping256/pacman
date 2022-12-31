@@ -1,14 +1,14 @@
 const pathNodes = {};
 const getPathNodeId = (x, y) => `${x}-${y}`;
 
-const isPlayerPermiableTile = (char) => /[ep*PG]/.test(char); 
+const isPlayerPermeableTile = (char) => /[ep*PG]/.test(char); 
 
 const CANTOR_PAIRS_TILL_25 = (() => {
     const output = [[0, 0]];
     let direction = 'right';
     let turningStep = 1;
     let step = 0;
-    for (let i = 1; i < 26; i++) {
+    for (let i = 1; i < 25; i++) {
         prevX = output[i - 1][0];
         prevY = output[i - 1][1];
         step++;
@@ -17,10 +17,11 @@ const CANTOR_PAIRS_TILL_25 = (() => {
             case 'down': {
                 output[i] = [prevX, prevY + 1];
                 if (step === turningStep) {
-                    direction = 'up';
+                    direction = 'right';
                     step = 0;
                     turningStep++;
                 }
+                break;
             }
             case 'left': {
                 output[i] = [prevX - 1, prevY];
@@ -28,6 +29,7 @@ const CANTOR_PAIRS_TILL_25 = (() => {
                     direction = 'down';
                     step = 0;
                 }
+                break;
             }
             case 'up': {
                 output[i] = [prevX, prevY - 1];
@@ -36,6 +38,7 @@ const CANTOR_PAIRS_TILL_25 = (() => {
                     step = 0;
                     turningStep++;
                 }
+                break;
             }
             case 'right': {
                 output[i] = [prevX + 1, prevY];
@@ -43,13 +46,12 @@ const CANTOR_PAIRS_TILL_25 = (() => {
                     direction = 'up';
                     step = 0;
                 }
+                break;
             }
         }
     }
     return output;
-});
-
-console.log(CANTOR_PAIRS_TILL_25);
+})();
 
 const findClosestPathNodeToPixelCoordinates = (pixelX, pixelY) => {
     const startX = Math.round((pixelX - SCREEN_OFFSET) / gridUnitX);
@@ -72,12 +74,12 @@ for (let y = 0; y < rows; y++) {
         const lft = x === 0 ? null : mapData[y][x - 1]; 
         const rgt = x === columns + 1 ? null : mapData[y][x + 1]; 
         
-        if (!isPlayerPermiableTile(cur)) break;
+        if (!isPlayerPermeableTile(cur)) continue;
 
-        const canGoUp = isPlayerPermiableTile(top);
-        const canGoBottom = isPlayerPermiableTile(bottom);
-        const canGoLeft = isPlayerPermiableTile(left);
-        const canGoRight = isPlayerPermiableTile(right);
+        const canGoUp = isPlayerPermeableTile(top);
+        const canGoDown = isPlayerPermeableTile(bot);
+        const canGoLeft = isPlayerPermeableTile(lft);
+        const canGoRight = isPlayerPermeableTile(rgt);
 
         const horizontals = [canGoLeft, canGoRight];
         const verticals = [canGoUp, canGoDown];
@@ -85,13 +87,49 @@ for (let y = 0; y < rows; y++) {
         if (horizontals.includes(true) && verticals.includes(true)) {
             pathNodes[id] = {
                 top: canGoUp,
-                bottom: canGoBottom,
+                bottom: canGoDown,
                 left: canGoLeft,
                 right: canGoRight,
 
                 x: (gridUnitX * x) + SCREEN_OFFSET,
                 y: (gridUnitY * y) + SCREEN_OFFSET
             };
+        };
+        
+    };
+};
+
+const opposites = {
+	left: 'right',
+	top: 'bottom',
+	right: 'left',
+	bottom: 'top',
+};
+
+const horizontals = ['left', 'right'];
+const verticals = ['up', 'bottom'];
+
+const getPossibleNextDirections = (state) => {
+	const currentDirection = state.player.direction;
+	const directions = [opposites[currentDirection]];
+	const closestPathNode = findClosestPathNodeToPixelCoordinates(state.player.x, state.player.y);
+	
+	if (horizontals.includes(currentDirection)) {
+        const { top, bottom } = closestPathNode;
+        if (top) {
+        	directions.push('top');
+        }
+        if (bottom) {
+        	directions.push('bottom');
+        }
+	} else {
+		const { left, right } = closestPathNode;
+        if (left) {
+        	directions.push('left');
+        }
+        if (right) {
+        	directions.push('right');
         }
     }
+    return directions;
 }

@@ -2,6 +2,9 @@
 const title = document.getElementById('title');
 const menu = document.getElementById('main-menu');
 const scores = document.getElementById('scores');
+const scoresList = document.getElementById('scores-list');
+const scoresHeader = document.getElementById('scores-header');
+const scoresModeButton = document.getElementById('scores-mode-button');
 const controls = document.getElementById('controls');
 
 const animateTitleElements = () => {
@@ -12,6 +15,14 @@ const animateTitleElements = () => {
 const unAnimateTitleElements = () => {
     title.classList.remove('animated');
     menu.classList.remove('animated');
+}
+
+const animateScores = () => {
+    scoresList.classList.add('animated');
+}
+
+const unAnimateScores = () => {
+    scoresList.classList.remove('animated');
 }
 
 const hideTitleScreen = () => {
@@ -29,6 +40,16 @@ const hideScoresScreen = () => {
 }
 
 const showScoresScreen = () => {
+    const scoresData = populateScoresList(scoresMode);
+	
+	if (scoresData.length > 0) {
+		animateScores();
+	} else {
+		unAnimateScores();
+		const defaultScoreLi = createScoreLi("Player", 25000);
+		scoresList.appendChild(defaultScoreLi);
+	}
+		
     scores?.removeAttribute('style');
 }
 
@@ -87,12 +108,28 @@ const scoresBackClickEventHandler = () => {
     showTitleScreen();
 };
 
+let scoresMode = "today";
+const switchScoresMode = () => {
+	if (scoresMode === "today") {
+		scoresMode = "all";
+		scoresHeader.textContent="All time hi-scores";
+		scoresModeButton.textContent="Show today's";
+	} else {
+		scoresMode = "today";
+		scoresHeader.textContent="Today's hi-scores";
+		scoresModeButton.textContent="Show all";
+	}
+	showScoresScreen();
+}
+
 const bindScoresScreenEvents = () => {
     document.getElementById('scores-back-button')?.addEventListener('click', scoresBackClickEventHandler); 
+    scoresModeButton?.addEventListener('click', switchScoresMode); 
 };
 
 const unbindScoresScreenEvents = () => {
     document.getElementById('scores-back-button')?.removeEventListener('click', scoresBackClickEventHandler); 
+    scoresModeButton?.removeEventListener('click', switchScoresMode); 
 }
 
 // - Controls events
