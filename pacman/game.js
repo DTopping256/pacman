@@ -1,5 +1,15 @@
+const validateIsOutOfBounds = (state) => {
+	if (state.player.x < 0 || state.player.x > columns || state.player.y < 0 || state.player.y > rows) {
+	    console.error("Player out of bounds", [state.player.x, state.player.y]);
+        return true;
+    }
+    return false;
+}
+
+let done;
 const startGame = () => {
     // Initial state
+    done = false;
     const state = { progress: 'INTRO', tickChanged: 0, level: 1, player: {
         isMoving: true,
         direction: 'right',
@@ -8,11 +18,11 @@ const startGame = () => {
         y: 23,
         lives: 1,
     }};
+    
+    resetGraphics();
 
     const TICK_SPEED = 1/100; // Ticks per second
-    const PLAYER_SPEED = 0.16;
-    //let start = undefined;
-    let done = false;
+    const PLAYER_SPEED = 0.04;
     let tick = 0;
     
     const canvas = document.getElementById('game');
@@ -39,6 +49,7 @@ const startGame = () => {
     
     const gameControlsSwipeEventHandler = (event) => {
         const swipeAngle = event.detail.data[0].currentDirection;
+        console.log(`Swipe event ${swipeAngle}`, state);
         
         if (swipeAngle > 315 || swipeAngle <= 45) {
                 state.player.nextDirection = 'right';
@@ -59,18 +70,57 @@ const startGame = () => {
     requestDrawPlayer(tick, state);
 
     const gameLoop = (timestamp) => {
-        // if (start === undefined) {
-        //     start = timestamp;
-        // }
-        //const totalElapsed = (timestamp ?? 0) - (start ?? 0);
-        //const ticksElapsed = Math.round(totalElapsed / TICK_SPEED);
-        
         drawMap(tick, state);
         requestDrawPlayer(tick, state);
-
-        // const leftStep = player.x - PLAYER_SPEED;
-
-        // if (player.direction === 'left' && player.x)
+        
+        const turningDirections = getPossibleNextDirections(state);
+        const nearestPathNode = findClosestPathNode(state.player.x, state.player.y);
+        const diff = nearestPathNode == null ? null : Math.sqrt(Math.pow(nearestPathNode.x - state.player.x, 2) + Math.pow(nearestPathNode.y - state.player.y, 2))
+        
+        console.log(state.player.x, state.player.y, nearestPathNode, turningDirections,  diff);
+        
+        if (state.player.nextDirection != state.player.direction &&
+            turningDirections.includes(state.player.nextDirection) && (
+            nearestPathNode == null ||
+            areDirectionsParallel(state.player.nextDirection, state.player.direction) ||
+            diff < PLAYER_SPEED
+        )) {
+        	console.log(turningDirections, nearestPathNode, diff);
+        	state.player.direction = state.player.nextDirection;
+            
+            if (nearestPathNode != null && !areDirectionsParallel(state.player.nextDirection, state.player.direction)) {
+                state.player.x = nearestPathNode.x;
+                state.player.y = nearestPathNode.y;
+            }
+        }
+        
+        if (turningDirections.includes(state.player.direction) || diff == null || diff > PLAYER_SPEED) {
+            switch(state.player.direction) {
+            	case 'left': {
+            	    state.player.x -= PLAYER_SPEED;
+                    break;
+                }
+                case 'top': {
+                    state.player.y -= PLAYER_SPEED;
+                    break;
+                }
+                case 'right': {
+            	    state.player.x += PLAYER_SPEED;
+                    break;
+                }
+                case 'bottom': {
+                    state.player.y += PLAYER_SPEED;
+                    break;
+                }
+            }
+        } else if (diff && diff < PLAYER_SPEED) {
+        	state.player.x = nearestPathNode.x;
+            state.player.y = nearestPathNode.y;
+        }
+        
+        if (validateIsOutOfBounds(state)) {
+        	done = true;
+        }
         
         if (!done) {
             requestAnimationFrame(gameLoop);
@@ -83,7 +133,9 @@ const startGame = () => {
 
     setTimeout(gameLoop, 4000);
     setTimeout(() => { renderLives(state.player.lives); renderEatenItems([bonusItemSVGs.cherry]); }, 1000);
-    setTimeout(() => { done = true }, 14000);
+    
     addEventListener('keydown', gameControlsKeyboardEventHandler);
     zt.bind(canvas, 'swipe', gameControlsSwipeEventHandler);
 };
+
+const stopGame = () => { done = true; }

@@ -71,6 +71,7 @@ const titleClickEventsByElementId = {
         hideTitleScreen();
         unbindTitleScreenEvents();
         startGame();
+        setTimeout(() => { stopGame(); showTitleScreen(); bindTitleScreenEvents(); }, 14000);
     },
     'scores-button': () => {
         hideTitleScreen();

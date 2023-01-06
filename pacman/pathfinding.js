@@ -1,7 +1,7 @@
 const pathNodes = {};
 const getPathNodeId = (x, y) => `${x}-${y}`;
-
-const isPlayerPermeableTile = (char) => /[ep*PG]/.test(char); 
+console.log('here1');
+const isPlayerPermeableTile = (char) => /[ep*PGF]/.test(char); 
 
 const CANTOR_PAIRS_TILL_25 = (() => {
     const output = [[0, 0]];
@@ -53,16 +53,20 @@ const CANTOR_PAIRS_TILL_25 = (() => {
     return output;
 })();
 
-const findClosestPathNodeToPixelCoordinates = (pixelX, pixelY) => {
-    const startX = Math.round((pixelX - SCREEN_OFFSET) / gridUnitX);
-    const startY = Math.round((pixelY - SCREEN_OFFSET) / gridUnitY);
-
+const findClosestPathNode = (x, y) => {
+	const roundedX = Math.round(x);
+	const roundedY = Math.round(y);
     return CANTOR_PAIRS_TILL_25.reduce((pathNode, [relX, relY]) => {
-        if (pathNode) return pathNode;
-        const id = getPathNodeId(startX + relX, startY + relY);
+        if (pathNode) {
+            return pathNode;
+        }
+        const id = getPathNodeId(roundedX + relX, roundedY+ relY);
+        console.log(pathNodes[id], id, 
         return pathNodes[id]; 
     }, null);
 }
+
+console.log('here1');
 
 for (let y = 0; y < rows; y++) {
     for (let x = 0; x < columns; x++) {
@@ -90,9 +94,8 @@ for (let y = 0; y < rows; y++) {
                 bottom: canGoDown,
                 left: canGoLeft,
                 right: canGoRight,
-
-                x: (gridUnitX * x) + SCREEN_OFFSET,
-                y: (gridUnitY * y) + SCREEN_OFFSET
+                x,
+                y,
             };
         };
         
@@ -109,10 +112,16 @@ const opposites = {
 const horizontals = ['left', 'right'];
 const verticals = ['up', 'bottom'];
 
+const areDirectionsParallel = (dir1, dir2) => (horizontals.includes(dir1) && horizontals.includes(dir2)) || (verticals.includes(dir1) && verticals.includes(dir2));
+
 const getPossibleNextDirections = (state) => {
 	const currentDirection = state.player.direction;
 	const directions = [opposites[currentDirection]];
-	const closestPathNode = findClosestPathNodeToPixelCoordinates(state.player.x, state.player.y);
+	const closestPathNode = findClosestPathNode(state.player.x, state.player.y);
+	
+	if (closestPathNode == null) {
+        return directions;
+    }
 	
 	if (horizontals.includes(currentDirection)) {
         const { top, bottom } = closestPathNode;
@@ -133,3 +142,4 @@ const getPossibleNextDirections = (state) => {
     }
     return directions;
 }
+console.log('here1');

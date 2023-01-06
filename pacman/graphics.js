@@ -36,6 +36,8 @@ gameCanvas.height = height * SCREEN_SCALE;
 const gridUnitX = (gameCanvas.width - SCREEN_OFFSET) / columns;
 const gridUnitY = (gameCanvas.height - SCREEN_OFFSET) / rows;
 
+const halfGridUnitX = Math.round(gridUnitX / 2);
+const halfGridUnitY = Math.round(gridUnitY / 2);
 
 // Canvas context manipulation
 const drawPoint = ({x, y}) => {
@@ -48,14 +50,11 @@ const drawPoint = ({x, y}) => {
 const fruitLevels = ['cherry'];
 
 const drawFruit = ({x, y, level}) => {
-	console.log('fruit draw', {x, y, level});
-	const halfGridX = gridUnitX / 2;
-	const halfGridY = gridUnitY / 2;
 	const mapMidpointX = columns / 2 * gridUnitX;
 	
     var img = new Image(); 
     img.onload = function() {
-        context.drawImage(img, mapMidpointX - halfGridX, y - halfGridY, gridUnitX, gridUnitY);
+        context.drawImage(img, mapMidpointX - halfGridUnitX, y - halfGridUnitY, gridUnitX, gridUnitY);
     }
     img.src = bonusItemSVGs[fruitLevels[level-1]];
 }
@@ -74,9 +73,6 @@ const drawFlashyPoint = ({x, y}) => {
 const drawWall = ({x, y, position, color}) => {
     context.strokeStyle = color;
     context.lineWidth = '10';
-    
-    const halfGridUnitX = Math.round(gridUnitX / 2);
-    const halfGridUnitY = Math.round(gridUnitY / 2);
 
     context.beginPath();
     if (position === 'top') {
@@ -95,6 +91,16 @@ const drawWall = ({x, y, position, color}) => {
         context.moveTo(x + halfGridUnitX, y - halfGridUnitY);
         context.lineTo(x + halfGridUnitX, y + halfGridUnitY);
     }
+    context.stroke();
+}
+
+const drawGate = ({x,y}) => {
+	context.strokeStyle = "white";
+	context.lineWidth = '20';
+	
+	context.beginPath();
+	context.moveTo(x - halfGridUnitX, y);
+    context.lineTo(x + halfGridUnitX, y);
     context.stroke();
 }
 
@@ -151,7 +157,13 @@ const shouldClearFlashyPoint = (t) => Math.round(t / FLASHY_POINT_DISPLAY_INTERV
 
 const shouldChangeWallColor = (t) => Math.round(t / WALL_COLOR_CHANGE_INTERVAL_TICKS) % 2 === 0;
 
-const renderedEntities = { points: [], fruit: undefined, flashyPoints: {}, walls: {} };
+const resetGraphics = () => {
+	context.clearRect(0, 0, gameCanvas.width, gameCanvas.height); 
+    renderedEntities = { points: [], fruit: undefined, flashyPoints: {}, walls: {} };
+}
+
+let renderedEntities;
+resetGraphics();
 
 // Will draw the given thing, if it has not been drawn or needs re-drawing.
 const requestDrawMapEntity = (entityType, gridX, gridY, t, state) => {
@@ -172,7 +184,6 @@ const requestDrawMapEntity = (entityType, gridX, gridY, t, state) => {
             return;
         }
         case 'fruit': {
-        	console.log('fruit draw request');
             if (renderedEntities.fruits || renderedEntities.fruits === null) return;
             drawFruit({ x, y, level: state.level });
             renderedEntities.fruits = { isVisible: true };
@@ -213,6 +224,10 @@ const requestDrawMapEntity = (entityType, gridX, gridY, t, state) => {
             if (renderedEntities.walls[id]?.color === wallColor) return;
             drawWall({ x, y, position: 'right', color: wallColor });
             renderedEntities.walls[id] = { color: wallColor };
+            return;
+        }
+        case 'gate': {
+        	drawGate({ x, y });
             return;
         }
     }
@@ -257,6 +272,10 @@ const drawMap = (t, state) => {
             
             if (cur === 'F') {
             	drawEntity('fruit');
+            }
+            
+            if (cur === '~') {
+            	drawEntity('gate');
             }
         }
     }
