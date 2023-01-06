@@ -1,312 +1,325 @@
 <html>
-	<head>
-		<title>Pac-man</title>
-		<style>
-			@font-face {
-				font-family: 'pacman';
-				src: url('./pacfont-good-font/PacfontGood-yYye.ttf') format('truetype');
-			}
 
-			@font-face {
-				font-family: 'gamefont';
-				src: url('./emulogic-font/Emulogic-zrEw.ttf') format('truetype');
-			}
+<head>
+    <title>Pac-man</title>
+    <style>
+        @font-face {
+            font-family: 'pacman';
+            src: url('./pacfont-good-font/PacfontGood-yYye.ttf') format('truetype');
+        }
 
-			body {
-				font-family: gamefont;
-				color: white;
-				background-color: black;
-			}
+        @font-face {
+            font-family: 'gamefont';
+            src: url('./emulogic-font/Emulogic-zrEw.ttf') format('truetype');
+        }
 
-			#title {
-				font-family: pacman;
-				font-size: 66px;
-				color: yellow;
+        body {
+            font-family: gamefont;
+            color: white;
+            background-color: black;
+        }
 
-				position: absolute;
-				top: 8%;
-				left: 20%;
-				right: 20%;
-				text-align-last: center;	
-				margin: 0;
-			}
-			
-			ul {
-				list-style-type: none;
-			}
-			
-			.scores-background {
-				background-color: rgba(0, 0, 0, 0.6);
-				border: 2px solid yellow;
-	            border-radius: 8px;
-			}
-			
-			ol#scores-list {
-				padding-left: 4em;
-	            padding-block: 1.5em;
-	
-	            max-height: 10em;
-	            overflow-y: hidden;
-			}
-			
-			ol#scores-list.animated li:first-of-type {
-				animation-name: rainbowText;
-				animation-delay: 0;
-				animation-duration: 1s;
-				animation-iteration-count: infinite;
-				animation-timing-function: linear;
-			}
-			
-			#title.animated {
-				top: 40%;
-				animation-name: slideup;
-				animation-delay: 1s;
-				animation-duration: 3s;
-				animation-fill-mode: forwards;
-				animation-iteration-count: 1;
-				animation-timing-function: linear;
-			}
+        #title {
+            font-family: pacman;
+            font-size: 66px;
+            color: yellow;
 
-			.menu {
-				position:absolute;
-				top: 30%;
-				left: 20%;
-				right: 20%;
-				bottom: 20%;
+            position: absolute;
+            top: 8%;
+            left: 20%;
+            right: 20%;
+            text-align-last: center;
+            margin: 0;
+        }
 
-				display: flex;
-				flex-direction: column;
-				gap: 1em;
+        ul {
+            list-style-type: none;
+        }
 
-				color: yellow;
-			}
-			
-			.menu h2 {
-                font-size: 22px;
+        .scores-background {
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 2px solid yellow;
+            border-radius: 8px;
+        }
+
+        ol#scores-list {
+            padding-left: 4em;
+            padding-block: 1.5em;
+
+            max-height: 10em;
+            overflow-y: hidden;
+        }
+
+        ol#scores-list.animated li:first-of-type {
+            animation-name: rainbowText;
+            animation-delay: 0;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+        }
+
+        #title.animated {
+            top: 40%;
+            animation-name: slideup;
+            animation-delay: 1s;
+            animation-duration: 3s;
+            animation-fill-mode: forwards;
+            animation-iteration-count: 1;
+            animation-timing-function: linear;
+        }
+
+        .menu {
+            position: absolute;
+            top: 30%;
+            left: 20%;
+            right: 20%;
+            bottom: 20%;
+
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+
+            color: yellow;
+        }
+
+        .menu h2 {
+            font-size: 22px;
+        }
+
+        .list-4>li {
+            position: relative;
+        }
+
+        .list-10>li {
+            position: relative;
+        }
+
+        .list-4>li>span {
+            position: absolute;
+            left: 4em;
+        }
+
+        .list-10>li>span {
+            position: absolute;
+            left: 10em;
+        }
+
+        .bar {
+            margin-inline: auto;
+            height: 2em;
+            width: 75%;
+
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+        }
+
+        .bar-value {
+            text-wrap: none;
+        }
+
+        .bar-value>* {
+            margin-left: 8px;
+        }
+
+        #current-score {
+            grid-column: 1 / 2;
+            grid-row: 1;
+        }
+
+        #high-score {
+            grid-column: 3 / 4;
+            grid-row: 1;
+            justify-self: right;
+        }
+
+        #lives {
+            grid-column: 1 / 2;
+            grid-row: 1;
+        }
+
+        #fruits {
+            grid-column: 3 / 4;
+            grid-row: 1;
+        }
+
+        #container {
+            position: relative;
+            height: 100%;
+            aspect-ratio: 1/1;
+            margin-inline: auto;
+            display: grid;
+            grid-auto-flow: row;
+            grid-template-rows: 2em calc(100% - 4em) 2em;
+            box-sizing: border-box;
+            padding: 1em;
+        }
+
+        #game {
+            background: black;
+            height: 100%;
+            width: 100%;
+        }
+
+        .menu button {
+            width: 100%;
+            height: 88px;
+
+            font-family: gamefont;
+            font-size: 20px;
+            color: yellow;
+            background: rgba(0, 0, 255, 0.3);
+            border: solid 2px white;
+            border-radius: 8px;
+        }
+
+        .menu button:hover {
+            background: rgba(0, 0, 255, 0.4);
+            font-size: 22px;
+            position: relative;
+        }
+
+        .menu button:hover::before {
+            content: "";
+            background-image: url(./pacman.gif);
+            background-size: 40px 40px;
+            background-color: yellow;
+            background-position-x: 29px;
+            background-position-y: 28px;
+            height: 17px;
+            width: 17px;
+            z-index: 2;
+            position: absolute;
+            top: 34px;
+            left: 20px;
+        }
+
+        #main-menu.animated button {
+            opacity: 0%;
+            animation-name: fadein;
+            animation-delay: 3.6s;
+            animation-duration: 0.4s;
+            animation-fill-mode: forwards;
+            animation-iteration-count: 1;
+            animation-timing-function: ease-in;
+        }
+
+        @keyframes slideup {
+            from {
+                top: 40%;
             }
 
-			.list-4>li {
-				position: relative;
-			}
-			.list-10>li {
-				position: relative;
-			}
-			.list-4>li>span {
-				position:absolute;
-				left: 4em;
-			}
-			.list-10>li>span {
-				position:absolute;
-				left: 10em;
-			}
-
-			.bar {
-                margin-inline: auto;
-                height: 2em;
-                width: 75%;
-			
-				display: grid;
-				grid-template-columns: 1fr auto 1fr;
-			}
-			
-			.bar-value {
-				text-wrap: none;
-			}
-			
-            .bar-value>* {
-                margin-left: 8px;
+            to {
+                top: 8%;
             }
-			
-			#current-score {
-				grid-column: 1 / 2;
-				grid-row: 1;
-			}
-			
-			#high-score {
-                grid-column: 3 / 4;
-                grid-row: 1;
-                justify-self: right;
-			}
-			
-			#lives {
-				grid-column: 1 / 2;
-				grid-row: 1;
-			}
-			
-			#fruits {
-                grid-column: 3 / 4;
-                grid-row: 1;
-			}
+        }
 
-			#container {
-				position: relative;
-				height: 100%;
-				aspect-ratio: 1/1;
-				margin-inline: auto;
-			}
-			#game {
-				background: black;
-				height: 100%;
-				width: 100%;
-				z-index: -1;
-			}
+        @keyframes fadein {
+            from {
+                opacity: 0%;
+            }
 
-			.menu button {
-				width: 100%;
-				height: 88px;
+            to {
+                opacity: 100%;
+            }
+        }
 
-				font-family: gamefont;
-				font-size: 20px;
-				color: yellow;
-				background: rgba(0, 0, 255, 0.3);
-				border: solid 2px white;
-				border-radius: 8px;
-			}
+        @keyframes rainbowText {
+            0% {
+                color: pink;
+            }
 
-			.menu button:hover {
-				background: rgba(0, 0, 255, 0.4);
-				font-size: 22px;
-				position: relative;
-			}
+            10% {
+                color: red;
+            }
 
-			.menu button:hover::before {
-				content: "";
-				background-image: url(./pacman.gif);
-				background-size: 40px 40px;
-				background-color: yellow;
-				background-position-x: 29px;
-				background-position-y: 28px;
-				height: 17px;
-				width: 17px;
-				z-index: 2;
-				position: absolute;
-				top: 34px;
-				left: 20px;
-			}
+            20% {
+                color: orange;
+            }
 
-			#main-menu.animated button {
-				opacity: 0%;
-				animation-name: fadein;
-				animation-delay: 3.6s;
-				animation-duration: 0.4s;
-				animation-fill-mode: forwards;
-				animation-iteration-count: 1;
-				animation-timing-function: ease-in;
-			}
+            30% {
+                color: yellow;
+            }
 
-			@keyframes slideup {
-				from {
-					top: 40%;
-				}
+            40% {
+                color: green;
+            }
 
-				to {
-					top: 8%;
-				}
-			}
+            50% {
+                color: blue;
+            }
 
-			@keyframes fadein {
-				from {
-					opacity: 0%;
-				}
+            60% {
+                color: purple;
+            }
 
-				to {
-					opacity: 100%;
-				}
-			}
-			
-			@keyframes rainbowText {
-				0% {
-					color: pink;
-				}
-				
-		        10% {
-			        color: red;
-	            }
-	
-	            20% {
-			        color:orange;
-	            }
-	
-	            30% {
-			        color:yellow;
-	            }
-	
-	            40% {
-			        color:green;
-	            }
-	
-	            50% {
-			        color:blue;
-	            }
-	
-	            60% {
-			        color: purple;
-	            }
-	
-	            70% {
-			        color: indigo;
-	            }
-	
-	            80% {
-			        color:violet;
-	            }
-	
-	            90% {
-		            color: grey;
-		        }
+            70% {
+                color: indigo;
+            }
 
-				100% {
-					color: white;
-				}
-			}
-		</style>
-		<link rel="icon" href="./icon.svg">
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/zingtouch/1.0.6/zingtouch.min.js" integrity="sha512-HmaXasRYOQJEXJWYwYCMcIA/XnPtW9WPvaBVWE2mQP6K31sRdcgaYUyB//P5540J4hFqMBcj6vkDEEGkwHkYdA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	</head>
-	<body>
-		<div id="container">
-			<div class="bar">
-				<div id="current-score" class="bar-value">Score<span id="current-score-value">0</span></div>
-				<div id="high-score" class="bar-value">Hi-score<span id="hi-score-value">0</span></div>
-			</div>
-			<h1 id="title" class="animated">Pac Man</h1>
-			<div id="main-menu" class="animated menu">
-				<button id="play-button">Play</button>
-				<button id="scores-button">High Scores</button>
-				<button id="controls-button">Controls</button>
-			</div>
-			<div id="scores" class="menu">
-				<h2 id="scores-header">Today's hi-scores</h2>
-				<div class="scores-background">
-				    <ol id="scores-list" class="list-10 animated"></ol>
-				</div>
-				<button id="scores-mode-button">Show all</button>
-				<button id="scores-back-button">Back</button>
-			</div>
-			<div id="controls" class="menu">
-				<h2>In-game Controls</h2>
-				<ul class="list-4">
-					<li>A<span>- Move left</span></li>
-					<li>W<span>- Move up</span></li>
-					<li>S<span>- Move down</span></li>
-					<li>D<span>- Move right</span></li>
-					<li>Esc<span>- Home screen</span></li>
-				</ul>
-				<button id="controls-back-button">Back</button>
-			</div>
-			<canvas id="game"></canvas>
-			<div class="bar">
-				<div id="lives" class="bar-value"></div>
-				<div id="fruits" class="bar-value"></div>
-			</div>
-		</div>
+            80% {
+                color: violet;
+            }
 
-		<script src="./map-data.js"></script>
-		<script src="./parse-map.js"></script>
-		<script src="./graphics.js"></script>
-		<script src="./pathfinding.js"></script>
-		<script src="./game.js"></script>
-		<script src="./scores.js"></script>
-		<script src="./index.js"></script>
-	</body>
+            90% {
+                color: grey;
+            }
+
+            100% {
+                color: white;
+            }
+        }
+    </style>
+    <link rel="icon" href="./icon.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zingtouch/1.0.6/zingtouch.min.js"
+        integrity="sha512-HmaXasRYOQJEXJWYwYCMcIA/XnPtW9WPvaBVWE2mQP6K31sRdcgaYUyB//P5540J4hFqMBcj6vkDEEGkwHkYdA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+    <div id="container">
+        <div class="bar">
+            <div id="current-score" class="bar-value">Score<span id="current-score-value">0</span></div>
+            <div id="high-score" class="bar-value">Hi-score<span id="hi-score-value">0</span></div>
+        </div>
+        <h1 id="title" class="animated">Pac Man</h1>
+        <div id="main-menu" class="animated menu">
+            <button id="play-button">Play</button>
+            <button id="scores-button">High Scores</button>
+            <button id="controls-button">Controls</button>
+        </div>
+        <div id="scores" class="menu">
+            <h2 id="scores-header">Today's hi-scores</h2>
+            <div class="scores-background">
+                <ol id="scores-list" class="list-10 animated"></ol>
+            </div>
+            <button id="scores-mode-button">Show all</button>
+            <button id="scores-back-button">Back</button>
+        </div>
+        <div id="controls" class="menu">
+            <h2>In-game Controls</h2>
+            <ul class="list-4">
+                <li>A<span>- Move left</span></li>
+                <li>W<span>- Move up</span></li>
+                <li>S<span>- Move down</span></li>
+                <li>D<span>- Move right</span></li>
+                <li>Esc<span>- Home screen</span></li>
+            </ul>
+            <button id="controls-back-button">Back</button>
+        </div>
+        <canvas id="game"></canvas>
+        <div class="bar">
+            <div id="lives" class="bar-value"></div>
+            <div id="fruits" class="bar-value"></div>
+        </div>
+    </div>
+
+    <script src="./map-data.js"></script>
+    <script src="./parse-map.js"></script>
+    <script src="./graphics.js"></script>
+    <script src="./pathfinding.js"></script>
+    <script src="./game.js"></script>
+    <script src="./scores.js"></script>
+    <script src="./index.js"></script>
+</body>
+
 </html>
